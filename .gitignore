@@ -6,6 +6,7 @@ out/
 # Rust
 server/target/
 server/Cargo.lock
+server/basica-lsp
 
 # VS Code
 .vscode-test/
