@@ -4,9 +4,11 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer};
 
+use crate::completion;
 use crate::definition;
 use crate::diagnostics;
 use crate::hover;
+use crate::symbols;
 
 pub struct BasicaBackend {
     client: Client,
@@ -39,6 +41,11 @@ impl LanguageServer for BasicaBackend {
                 )),
                 definition_provider: Some(OneOf::Left(true)),
                 hover_provider: Some(HoverProviderCapability::Simple(true)),
+                completion_provider: Some(CompletionOptions {
+                    trigger_characters: Some(vec![" ".to_string()]),
+                    ..Default::default()
+                }),
+                document_symbol_provider: Some(OneOf::Left(true)),
                 ..Default::default()
             },
             ..Default::default()
@@ -102,6 +109,30 @@ impl LanguageServer for BasicaBackend {
         let docs = self.documents.read().unwrap();
         if let Some(text) = docs.get(uri) {
             return Ok(hover::get_hover(text, pos));
+        }
+        Ok(None)
+    }
+
+    async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
+        let uri = &params.text_document_position.text_document.uri;
+        let pos = params.text_document_position.position;
+        let docs = self.documents.read().unwrap();
+        if let Some(text) = docs.get(uri) {
+            let items = completion::get_completions(text, pos);
+            return Ok(Some(CompletionResponse::Array(items)));
+        }
+        Ok(None)
+    }
+
+    async fn document_symbol(
+        &self,
+        params: DocumentSymbolParams,
+    ) -> Result<Option<DocumentSymbolResponse>> {
+        let uri = &params.text_document.uri;
+        let docs = self.documents.read().unwrap();
+        if let Some(text) = docs.get(uri) {
+            let syms = symbols::get_document_symbols(text);
+            return Ok(Some(DocumentSymbolResponse::Nested(syms)));
         }
         Ok(None)
     }

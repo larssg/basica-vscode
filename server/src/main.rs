@@ -1,7 +1,9 @@
 mod backend;
+mod completion;
 mod definition;
 mod diagnostics;
 mod hover;
+mod symbols;
 
 use backend::BasicaBackend;
 use tower_lsp::{LspService, Server};
