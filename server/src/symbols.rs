@@ -58,11 +58,7 @@ pub fn get_document_symbols(source: &str) -> Vec<DocumentSymbol> {
                     )
                 } else {
                     // Get first statement keyword
-                    let keyword = rest
-                        .split_whitespace()
-                        .next()
-                        .unwrap_or("")
-                        .to_uppercase();
+                    let keyword = rest.split_whitespace().next().unwrap_or("").to_uppercase();
                     let keyword = keyword.split('(').next().unwrap_or(&keyword);
                     let keyword = keyword.split('=').next().unwrap_or(keyword);
 
@@ -78,11 +74,7 @@ pub fn get_document_symbols(source: &str) -> Vec<DocumentSymbol> {
                         } else {
                             rest.to_string()
                         };
-                        (
-                            format!("{} {}", line_num, preview),
-                            SymbolKind::KEY,
-                            None,
-                        )
+                        (format!("{} {}", line_num, preview), SymbolKind::KEY, None)
                     } else {
                         continue; // Skip non-interesting lines
                     }

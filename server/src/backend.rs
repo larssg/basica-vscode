@@ -7,7 +7,12 @@ use tower_lsp::{Client, LanguageServer};
 use crate::completion;
 use crate::definition;
 use crate::diagnostics;
+use crate::folding;
 use crate::hover;
+use crate::references;
+use crate::rename;
+use crate::semantic_tokens;
+use crate::signature;
 use crate::symbols;
 
 pub struct BasicaBackend {
@@ -46,6 +51,30 @@ impl LanguageServer for BasicaBackend {
                     ..Default::default()
                 }),
                 document_symbol_provider: Some(OneOf::Left(true)),
+                references_provider: Some(OneOf::Left(true)),
+                signature_help_provider: Some(SignatureHelpOptions {
+                    trigger_characters: Some(vec!["(".to_string(), ",".to_string()]),
+                    retrigger_characters: None,
+                    work_done_progress_options: Default::default(),
+                }),
+                rename_provider: Some(OneOf::Right(RenameOptions {
+                    prepare_provider: Some(true),
+                    work_done_progress_options: Default::default(),
+                })),
+                folding_range_provider: Some(FoldingRangeProviderCapability::Simple(true)),
+                semantic_tokens_provider: Some(
+                    SemanticTokensServerCapabilities::SemanticTokensOptions(
+                        SemanticTokensOptions {
+                            legend: SemanticTokensLegend {
+                                token_types: semantic_tokens::TOKEN_TYPES.to_vec(),
+                                token_modifiers: semantic_tokens::TOKEN_MODIFIERS.to_vec(),
+                            },
+                            full: Some(SemanticTokensFullOptions::Bool(true)),
+                            range: None,
+                            work_done_progress_options: Default::default(),
+                        },
+                    ),
+                ),
                 ..Default::default()
             },
             ..Default::default()
@@ -133,6 +162,77 @@ impl LanguageServer for BasicaBackend {
         if let Some(text) = docs.get(uri) {
             let syms = symbols::get_document_symbols(text);
             return Ok(Some(DocumentSymbolResponse::Nested(syms)));
+        }
+        Ok(None)
+    }
+
+    async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<Location>>> {
+        let uri = params.text_document_position.text_document.uri;
+        let pos = params.text_document_position.position;
+        let docs = self.documents.read().unwrap();
+        if let Some(text) = docs.get(&uri) {
+            let refs = references::find_references(text, pos, uri);
+            if !refs.is_empty() {
+                return Ok(Some(refs));
+            }
+        }
+        Ok(None)
+    }
+
+    async fn signature_help(&self, params: SignatureHelpParams) -> Result<Option<SignatureHelp>> {
+        let uri = &params.text_document_position_params.text_document.uri;
+        let pos = params.text_document_position_params.position;
+        let docs = self.documents.read().unwrap();
+        if let Some(text) = docs.get(uri) {
+            return Ok(signature::get_signature_help(text, pos));
+        }
+        Ok(None)
+    }
+
+    async fn prepare_rename(
+        &self,
+        params: TextDocumentPositionParams,
+    ) -> Result<Option<PrepareRenameResponse>> {
+        let uri = &params.text_document.uri;
+        let pos = params.position;
+        let docs = self.documents.read().unwrap();
+        if let Some(text) = docs.get(uri) {
+            return Ok(rename::prepare_rename(text, pos));
+        }
+        Ok(None)
+    }
+
+    async fn rename(&self, params: RenameParams) -> Result<Option<WorkspaceEdit>> {
+        let uri = params.text_document_position.text_document.uri;
+        let pos = params.text_document_position.position;
+        let new_name = &params.new_name;
+        let docs = self.documents.read().unwrap();
+        if let Some(text) = docs.get(&uri) {
+            return Ok(rename::rename_symbol(text, pos, new_name, uri));
+        }
+        Ok(None)
+    }
+
+    async fn folding_range(&self, params: FoldingRangeParams) -> Result<Option<Vec<FoldingRange>>> {
+        let uri = &params.text_document.uri;
+        let docs = self.documents.read().unwrap();
+        if let Some(text) = docs.get(uri) {
+            let ranges = folding::get_folding_ranges(text);
+            if !ranges.is_empty() {
+                return Ok(Some(ranges));
+            }
+        }
+        Ok(None)
+    }
+
+    async fn semantic_tokens_full(
+        &self,
+        params: SemanticTokensParams,
+    ) -> Result<Option<SemanticTokensResult>> {
+        let uri = &params.text_document.uri;
+        let docs = self.documents.read().unwrap();
+        if let Some(text) = docs.get(uri) {
+            return Ok(Some(semantic_tokens::get_semantic_tokens(text)));
         }
         Ok(None)
     }

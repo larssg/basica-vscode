@@ -2,7 +2,12 @@ mod backend;
 mod completion;
 mod definition;
 mod diagnostics;
+mod folding;
 mod hover;
+mod references;
+mod rename;
+mod semantic_tokens;
+mod signature;
 mod symbols;
 
 use backend::BasicaBackend;

@@ -1,9 +1,13 @@
+use basica::lexer::is_keyword;
 use std::collections::HashMap;
 use tower_lsp::lsp_types::*;
-use basica::lexer::is_keyword;
 
 /// Find definition for GOTO/GOSUB targets or variable first assignments
-pub fn find_definition(source: &str, position: Position, uri: Url) -> Option<GotoDefinitionResponse> {
+pub fn find_definition(
+    source: &str,
+    position: Position,
+    uri: Url,
+) -> Option<GotoDefinitionResponse> {
     let lines: Vec<&str> = source.lines().collect();
     let line = lines.get(position.line as usize)?;
 
@@ -13,14 +17,24 @@ pub fn find_definition(source: &str, position: Position, uri: Url) -> Option<Got
     // Check if it's a number (GOTO/GOSUB target)
     if let Ok(target_line) = word.parse::<u32>() {
         let line_upper = line.to_uppercase();
-        if line_upper.contains("GOTO") || line_upper.contains("GOSUB") || line_upper.contains("RESTORE") || line_upper.contains("THEN") {
+        if line_upper.contains("GOTO")
+            || line_upper.contains("GOSUB")
+            || line_upper.contains("RESTORE")
+            || line_upper.contains("THEN")
+        {
             let line_map = build_line_map(source);
             if let Some(&source_line) = line_map.get(&target_line) {
                 return Some(GotoDefinitionResponse::Scalar(Location {
                     uri,
                     range: Range {
-                        start: Position { line: source_line, character: 0 },
-                        end: Position { line: source_line, character: 0 },
+                        start: Position {
+                            line: source_line,
+                            character: 0,
+                        },
+                        end: Position {
+                            line: source_line,
+                            character: 0,
+                        },
                     },
                 }));
             }
@@ -41,8 +55,14 @@ pub fn find_definition(source: &str, position: Position, uri: Url) -> Option<Got
         return Some(GotoDefinitionResponse::Scalar(Location {
             uri,
             range: Range {
-                start: Position { line: def_line, character: def_char },
-                end: Position { line: def_line, character: def_char + word.len() as u32 },
+                start: Position {
+                    line: def_line,
+                    character: def_char,
+                },
+                end: Position {
+                    line: def_line,
+                    character: def_char + word.len() as u32,
+                },
             },
         }));
     }
