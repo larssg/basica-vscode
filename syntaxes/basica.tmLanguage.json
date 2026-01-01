@@ -1,0 +1,99 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "IBM BASIC",
+  "scopeName": "source.basica",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#line-number" },
+    { "include": "#numbers" },
+    { "include": "#keywords-control" },
+    { "include": "#keywords-io" },
+    { "include": "#keywords-graphics" },
+    { "include": "#keywords-other" },
+    { "include": "#operators-logical" },
+    { "include": "#functions" },
+    { "include": "#operators" },
+    { "include": "#file-numbers" },
+    { "include": "#variables-string" }
+  ],
+  "repository": {
+    "comments": {
+      "match": "(?i)\\bREM\\b.*$",
+      "name": "comment.line.rem.basica"
+    },
+    "strings": {
+      "begin": "\"",
+      "end": "\"",
+      "name": "string.quoted.double.basica"
+    },
+    "line-number": {
+      "match": "^\\s*(\\d+)\\b",
+      "captures": {
+        "1": { "name": "constant.numeric.line-number.basica" }
+      }
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "match": "&[Hh][0-9A-Fa-f]+",
+          "name": "constant.numeric.hex.basica"
+        },
+        {
+          "match": "\\b\\d+\\.?\\d*([EeDd][+-]?\\d+)?[!#%&]?\\b",
+          "name": "constant.numeric.basica"
+        },
+        {
+          "match": "\\.\\d+([EeDd][+-]?\\d+)?[!#%&]?\\b",
+          "name": "constant.numeric.basica"
+        }
+      ]
+    },
+    "keywords-control": {
+      "match": "(?i)\\b(IF|THEN|ELSE|FOR|TO|STEP|NEXT|WHILE|WEND|DO|LOOP|UNTIL|GOTO|GOSUB|RETURN|ON|EXIT|SELECT|CASE|IS|END|STOP)\\b",
+      "name": "keyword.control.basica"
+    },
+    "keywords-io": {
+      "match": "(?i)\\b(PRINT|LPRINT|INPUT|LINE|READ|DATA|RESTORE|OPEN|CLOSE|OUTPUT|APPEND|AS|KILL|NAME|MKDIR|RMDIR|CHDIR|FILES|USING)\\b",
+      "name": "keyword.other.io.basica"
+    },
+    "keywords-graphics": {
+      "match": "(?i)\\b(SCREEN|COLOR|WIDTH|CLS|LOCATE|CIRCLE|PAINT|GET|PUT|DRAW|PSET|PRESET|PLAY|SOUND|BEEP)\\b",
+      "name": "keyword.other.graphics.basica"
+    },
+    "keywords-other": {
+      "match": "(?i)\\b(LET|DIM|DEF|SEG|FN|POKE|SWAP|RANDOMIZE|CLEAR|ERROR|RESUME|KEY|OFF|CHAIN|DEFDBL|DEFINT|DEFSNG|DEFSTR)\\b",
+      "name": "keyword.other.basica"
+    },
+    "operators-logical": {
+      "match": "(?i)\\b(AND|OR|XOR|NOT|MOD)\\b",
+      "name": "keyword.operator.logical.basica"
+    },
+    "functions": {
+      "match": "(?i)\\b(CHR|STR|VAL|LEN|LEFT|RIGHT|MID|INKEY|STRING|INT|ABS|SGN|SQR|ASC|TAB|SPC|PEEK|SIN|COS|TAN|ATN|LOG|EXP|RND|CINT|FIX|TIMER|INSTR|SPACE|HEX|OCT|POINT|LCASE|UCASE|LTRIM|RTRIM|DATE|TIME|EOF|CSRLIN|POS)(\\$)?\\b",
+      "captures": {
+        "0": { "name": "support.function.basica" }
+      }
+    },
+    "operators": {
+      "patterns": [
+        {
+          "match": "<>|<=|>=|<|>|=",
+          "name": "keyword.operator.comparison.basica"
+        },
+        {
+          "match": "[+\\-*/\\\\^]",
+          "name": "keyword.operator.arithmetic.basica"
+        }
+      ]
+    },
+    "file-numbers": {
+      "match": "#\\d+",
+      "name": "constant.other.file-number.basica"
+    },
+    "variables-string": {
+      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\$",
+      "name": "variable.other.string.basica"
+    }
+  }
+}

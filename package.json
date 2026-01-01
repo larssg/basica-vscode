@@ -1,0 +1,66 @@
+{
+  "name": "basica-vscode",
+  "displayName": "basica - IBM BASIC",
+  "description": "Syntax highlighting and language support for IBM BASIC",
+  "version": "0.1.0",
+  "publisher": "larssg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/larssg/basica-vscode"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "basica",
+        "aliases": ["IBM BASIC", "basica", "BASIC"],
+        "extensions": [".bas"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "basica",
+        "scopeName": "source.basica",
+        "path": "./syntaxes/basica.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "basica",
+      "properties": {
+        "basica.lsp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the LSP server for diagnostics and navigation."
+        },
+        "basica.lsp.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the basica-lsp server binary."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}

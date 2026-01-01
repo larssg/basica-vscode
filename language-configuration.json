@@ -1,0 +1,22 @@
+{
+  "comments": {
+    "lineComment": "REM "
+  },
+  "brackets": [
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    { "open": "(", "close": ")" },
+    { "open": "\"", "close": "\"", "notIn": ["string"] }
+  ],
+  "surroundingPairs": [
+    ["(", ")"],
+    ["\"", "\""]
+  ],
+  "folding": {
+    "markers": {
+      "start": "(?i)^\\s*\\d+\\s+(FOR|WHILE|DO|SELECT)\\b",
+      "end": "(?i)^\\s*\\d+\\s+(NEXT|WEND|LOOP|END SELECT)\\b"
+    }
+  }
+}

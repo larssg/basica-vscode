@@ -1,0 +1,18 @@
+[package]
+name = "basica-lsp"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "basica-lsp"
+path = "src/main.rs"
+
+[dependencies]
+# For development, use local path:
+basica = { path = "../../basica" }
+# For release, use:
+# basica = { git = "https://github.com/larssg/basica" }
+tower-lsp = "0.20"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

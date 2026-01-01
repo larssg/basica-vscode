@@ -1,0 +1,14 @@
+# Node
+node_modules/
+out/
+*.vsix
+
+# Rust
+server/target/
+server/Cargo.lock
+
+# VS Code
+.vscode-test/
+
+# OS
+.DS_Store
